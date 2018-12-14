@@ -1,17 +1,12 @@
-import random
-from collections import namedtuple
 from xml.etree import ElementTree
 
 import requests
 
-Episode = namedtuple('Episode', 'title link pubdate show_id')
-episode_data = {}
+from service import Episode, episode_data, display_results, get_episode, get_latest_show_id, show_header
 
 
 def main():
-    # SHOW THE HEADER
-    print("Welcome to the talk python info downloader.")
-    print()
+    show_header()
 
     # DOWNLOAD THE EPISODE DATA
     url = 'https://talkpython.fm/episodes/rss'
@@ -21,9 +16,10 @@ def main():
 
     dom = ElementTree.fromstring(resp.text)
 
-    episode_count = len(dom.findall('channel/item'))
+    items = dom.findall('channel/item')
+    episode_count = len(items)
 
-    for idx, item in enumerate(dom.findall('channel/item')):
+    for idx, item in enumerate(items):
         episode = Episode(
             item.find('title').text,
             item.find('link').text,
@@ -33,19 +29,14 @@ def main():
         episode_data[episode.show_id] = episode
 
     # GET LATEST SHOW ID
-    latest_show_id = max(episode_data.keys())
+    latest_show_id = get_latest_show_id()
 
     print("Working with total of {} episodes".format(latest_show_id))
 
-    # DISPLAY RESULTS
-    start = random.randint(90, 110)
-    latest_id = max(episode_data.keys())
-    end = random.randint(130, latest_id + 1)
+    end, start = display_results()
 
     for show_id in range(start, end):
-        # GET EPISODE
-        info = episode_data.get(show_id)
-        print("{}. {}".format(info.show_id, info.title))
+        get_episode(show_id)
 
 
 if __name__ == '__main__':

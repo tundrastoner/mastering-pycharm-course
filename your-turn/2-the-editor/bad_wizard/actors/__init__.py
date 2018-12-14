@@ -1,18 +1,20 @@
 import random
 
+# this was converted into a python package
 
 class Creature:
     def __init__(self, name, the_level):
         self.name = name
         self.level = the_level
 
+    def get_defensive_roll(self, modifier=3):
+        role = random.randint(1, 12)
+        return modifier * role * self.level
+
     def __repr__(self):
         return "Creature: {} of level {}".format(
             self.name, self.level
         )
-
-    def get_defensive_roll(self):
-        return random.randint(1, 12) * self.level
 
 
 class Wizard(Creature):
@@ -45,6 +47,7 @@ class Wizard(Creature):
 
 
 class SmallAnimal(Creature):
+
     def get_defensive_roll(self):
         base_roll = super().get_defensive_roll()
         return base_roll / 2
